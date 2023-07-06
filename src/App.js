@@ -16,6 +16,7 @@ function App() {
         const isAuthenticatedResponse = await axios.get('http://127.0.0.1:8000/spotify/is-authenticated');
         const isAuthenticated = isAuthenticatedResponse.data.status;
         setSpotifyAuthenticated(isAuthenticated);
+        console.log('isAuthenticated:', isAuthenticated);
   
         if (!isAuthenticated) {
           const authUrlResponse = await axios.get('http://127.0.0.1:8000/spotify/get-auth-url');
@@ -27,7 +28,7 @@ function App() {
       }
     };
     
-    authenticateSpotify();
+    authenticateSpotify();  
   }, []);
 
   
@@ -45,29 +46,29 @@ function App() {
         setAllPlaylists([]);
       }
   
-      try {
-        const likedSongsResponse = await axios.get('http://127.0.0.1:8000/api/liked-songs/');
-        if (likedSongsResponse.data.length === 0) {
-          setLikedSongs([]);
-        } else {
-          setLikedSongs(likedSongsResponse.data);
-        }
-      } catch (error) {
-        console.error('Error fetching liked songs:', error);
-        setLikedSongs([]);
-      }
+      // try {
+      //   const likedSongsResponse = await axios.get('http://127.0.0.1:8000/api/liked-songs/');
+      //   if (likedSongsResponse.data.length === 0) {
+      //     setLikedSongs([]);
+      //   } else {
+      //     setLikedSongs(likedSongsResponse.data);
+      //   }
+      // } catch (error) {
+      //   console.error('Error fetching liked songs:', error);
+      //   setLikedSongs([]);
+      // }
   
-      try {
-        const savedPlaylistsResponse = await axios.get('http://127.0.0.1:8000/api/saved-playlists/');
-        if (savedPlaylistsResponse.data.length === 0) {
-          setSavedPlaylists([]);
-        } else {
-          setSavedPlaylists(savedPlaylistsResponse.data);
-        }
-      } catch (error) {
-        console.error('Error fetching saved playlists:', error);
-        setSavedPlaylists([]);
-      }
+      // try {
+      //   const savedPlaylistsResponse = await axios.get('http://127.0.0.1:8000/api/saved-playlists/');
+      //   if (savedPlaylistsResponse.data.length === 0) {
+      //     setSavedPlaylists([]);
+      //   } else {
+      //     setSavedPlaylists(savedPlaylistsResponse.data);
+      //   }
+      // } catch (error) {
+      //   console.error('Error fetching saved playlists:', error);
+      //   setSavedPlaylists([]);
+      // }
     };
   
     fetchData();
