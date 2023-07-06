@@ -16,6 +16,7 @@ function App() {
         const isAuthenticatedResponse = await axios.get('http://127.0.0.1:8000/spotify/is-authenticated');
         const isAuthenticated = isAuthenticatedResponse.data.status;
         setSpotifyAuthenticated(isAuthenticated);
+        console.log('isAuthenticated:', isAuthenticated);
   
         if (!isAuthenticated) {
           const authUrlResponse = await axios.get('http://127.0.0.1:8000/spotify/get-auth-url');
