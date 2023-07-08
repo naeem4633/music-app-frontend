@@ -9,6 +9,7 @@ function App() {
   const [likedSongs, setLikedSongs] = useState([]);
   const [savedPlaylists, setSavedPlaylists] = useState([]);
   const [spotifyAuthenticated, setSpotifyAuthenticated] = useState(false);
+  const [song, setSong] = useState({title:"", artist:"", image_url:"", icon_url:"", progress:"", duration:""});
 
   useEffect(() => {
     const authenticateSpotify = async () => {
@@ -31,6 +32,28 @@ function App() {
     authenticateSpotify();  
   }, []);
 
+  useEffect(() => {
+    const fetchCurrentSong = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:8000/spotify/current-song');
+        const currentSong = response.data;
+        setSong(currentSong);
+        console.log('currentSong:', currentSong);
+      } catch (error) {
+        console.error('Error fetching current song:', error);
+      }
+    };
+
+    const interval = setInterval(() => {
+      fetchCurrentSong();
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  console.log('song:', song)
   
   useEffect(() => {
     const fetchData = async () => {
@@ -81,7 +104,7 @@ function App() {
           <Routes>
             <Route
               path="/"
-              element={<Home allPlaylists={allPlaylists}/>}
+              element={<Home allPlaylists={allPlaylists} song={song}/>}
             />
           </Routes>
         </div>
