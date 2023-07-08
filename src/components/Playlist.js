@@ -1,7 +1,50 @@
 import React from 'react'
-
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 
 const Playlist = () => {
+    const [playlist, setPlaylist] = useState({});
+    const [playlistTracks, setPlaylistTracks] = useState([]);
+    const { playlistId } = useParams();
+
+    useEffect(() => {
+        const fetchPlaylistTracks = async () => {
+          try {
+            console.log('playlistId:', playlistId);
+            const response = await axios.get(`http://127.0.0.1:8000/spotify/get-playlist/${playlistId}`);
+            const playlistData = response.data;
+            setPlaylist(playlistData);
+            // console.log('playlistData:', playlistData);
+            // console.log('playlist:', playlist);
+    
+            // Extract the list of songs from the playlist data
+            const tracks = playlistData.songs;
+            setPlaylistTracks(tracks);
+            // console.log('playlistTracks:', playlistTracks);
+          } catch (error) {
+            console.error('Error fetching playlist tracks:', error);
+          }
+        };
+    
+        fetchPlaylistTracks();
+        }, [playlistId]);
+
+        useEffect(() => {
+            console.log('playlist:', playlist);
+          }, [playlist]);
+          
+          useEffect(() => {
+            console.log('playlistTracks:', playlistTracks);
+          }, [playlistTracks]);
+
+    const formatDuration = (duration) => {
+    const minutes = Math.floor(duration / 60000);
+    const seconds = Math.floor((duration % 60000) / 1000);
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    };
+          
+
   return (
     <section className='w-3/4 min-h-screen flex flex-col py-2 px-1 text-white '>
         <div className='gray-color rounded-md border border-white flex-grow flex flex-col p-2'>
@@ -18,11 +61,11 @@ const Playlist = () => {
             <div className='w-full flex flex-col border border-white p-4 pt-28 justify-end h-1/3 items-start space-y-8'>
                 <div>
                     <p className='text-left'>Playlist</p>
-                    <p className='text-7xl font-bold'>Top 50 Global</p>
+                    <p className='text-7xl font-bold'>{playlist.name}</p>
                 </div>
                 <div className='space-y-1'>
-                    <p className='text-gray-300 text-sm text-left'>The hottest local and global tracks around the world</p>
-                    <p className='text-left text-sm'>82,947 likes 65 songs, about 3 hr 15 min</p>
+                    {playlist.description && <p className='text-left text-sm'>{playlist.description}</p>}
+                    <p className='text-left text-sm'>82,947 likes, {playlistTracks.length} songs, about 3 hr 15 min</p>
                 </div>
             </div>
 
@@ -35,24 +78,26 @@ const Playlist = () => {
             <div className='flex flex-row border border-gray-400 px-4 py-2 border-x-0 border-t-0 justify-evenly text-sm text-gray-400'>
                 <p className='text-left w-1/3 pl-10'>Title</p>
                 <p className='w-1/3'>Album</p>
-                <p className='w-1/3'>Date Added</p>
+                <p className='w-1/3'>Duration</p>
             </div>
 
             <div className='flex flex-col border border-gray-400 p-4 text-sm flex-grow'>
 
-                <div className='w-full h-16 border border-white pl-3 flex flex-row items-center justify-evenly hover:bg-gray-800'>
+                {playlistTracks.map((track) => (
+                <div className='w-full h-16 border border-white pl-3 flex flex-row items-center justify-evenly hover:bg-gray-800' key={track.name}>
                     <div className='flex flex-row items-center space-x-3 w-1/3'>
-                        <div className='w-2 h-2 bg-white rounded-full'></div>
-                        <img className='border border-gray-300 w-11 h-11' src=''></img>
-                        <div className='flex flex-col text-left'>
-                            <p>Song Name</p>
-                            <p className='text-gray-400'>Artist Name</p>
-                        </div>
+                    <div className='w-2 h-2 bg-white rounded-full'></div>
+                    <img className='border border-gray-300 w-11 h-11' src={track.image_url} alt='Song Cover'></img>
+                    <div className='flex flex-col text-left'>
+                        <p>{track.name}</p>
+                        <p className='text-gray-400'>Artist name</p>
                     </div>
-                    <p className='text-gray-400 w-1/3'>Album Name</p>
-                    <p className='text-gray-400 w-1/3 pl-10'>Date Added</p>
+                    </div>
+                    <p className='text-gray-400 w-1/3'>{track.album}</p>
+                    <p className='text-gray-400 w-1/3 pl-10'>{formatDuration(track.duration)}</p>
                     <div className='w-6 h-6 bg-white -translate-x-3'></div>
                 </div>
+                ))}
 
             </div>
         </div>

@@ -3,13 +3,14 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
 import Home from './pages/Home.js';
+import Playlist from './components/Playlist.js';
 
 function App() {
   const [allPlaylists, setAllPlaylists] = useState([]);
   const [likedSongs, setLikedSongs] = useState([]);
   const [savedPlaylists, setSavedPlaylists] = useState([]);
   const [spotifyAuthenticated, setSpotifyAuthenticated] = useState(false);
-  const [song, setSong] = useState({title:"", artist:"", image_url:"", icon_url:"", progress:"", duration:""});
+  const [song, setSong] = useState({title: '', artist: '', album: '', albumImageUrl: '', duration: 0, isPlaying: false});
 
   useEffect(() => {
     const authenticateSpotify = async () => {
@@ -33,6 +34,21 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const getSavedPlaylists = async () => {
+      try{
+        const response = await axios.get('http://127.0.0.1:8000/spotify/get-saved-playlists');
+        const savedPlaylists = response.data;
+        setSavedPlaylists(savedPlaylists);
+        console.log('savedPlaylists:', savedPlaylists);
+      }catch(error){
+        console.error('Error getting saved playlists:', error);
+      }
+    };
+
+    getSavedPlaylists();
+  }, []);
+
+  useEffect(() => {
     const fetchCurrentSong = async () => {
       try {
         const response = await axios.get('http://127.0.0.1:8000/spotify/current-song');
@@ -46,7 +62,7 @@ function App() {
 
     const interval = setInterval(() => {
       fetchCurrentSong();
-    }, 1000);
+    }, 10000);
 
     return () => {
       clearInterval(interval);
@@ -68,30 +84,6 @@ function App() {
         console.error('Error fetching all playlists:', error);
         setAllPlaylists([]);
       }
-  
-      // try {
-      //   const likedSongsResponse = await axios.get('http://127.0.0.1:8000/api/liked-songs/');
-      //   if (likedSongsResponse.data.length === 0) {
-      //     setLikedSongs([]);
-      //   } else {
-      //     setLikedSongs(likedSongsResponse.data);
-      //   }
-      // } catch (error) {
-      //   console.error('Error fetching liked songs:', error);
-      //   setLikedSongs([]);
-      // }
-  
-      // try {
-      //   const savedPlaylistsResponse = await axios.get('http://127.0.0.1:8000/api/saved-playlists/');
-      //   if (savedPlaylistsResponse.data.length === 0) {
-      //     setSavedPlaylists([]);
-      //   } else {
-      //     setSavedPlaylists(savedPlaylistsResponse.data);
-      //   }
-      // } catch (error) {
-      //   console.error('Error fetching saved playlists:', error);
-      //   setSavedPlaylists([]);
-      // }
     };
   
     fetchData();
@@ -102,10 +94,8 @@ function App() {
       <div className="App">
         <div className="App-body">
           <Routes>
-            <Route
-              path="/"
-              element={<Home allPlaylists={allPlaylists} song={song}/>}
-            />
+            <Route path="/" element={<Home allPlaylists={allPlaylists} song={song} savedPlaylists={savedPlaylists} renderPlaylist={false}/>} />
+            <Route path="/playlist/:playlistId" element={<Home savedPlaylists={savedPlaylists} song={song} renderPlaylist={true} />} />
           </Routes>
         </div>
       </div>

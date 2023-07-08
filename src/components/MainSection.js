@@ -2,7 +2,6 @@ import React from 'react'
 
 const MainSection = ({allPlaylists}) => {
 
-    const firstBatch = allPlaylists.slice(0, 6);
 
   return (
     <section className='w-3/4 min-h-screen flex flex-col py-2 px-1 text-white '>
@@ -23,7 +22,7 @@ const MainSection = ({allPlaylists}) => {
 
             <div className='w-full border border-white items-center p-4 grid grid-cols-3 gap-x-6 gap-y-4'>
                 
-                {firstBatch.map((playlist) => (
+                {allPlaylists.map((playlist) => (
                     <div className='border border-white w-full h-24 flex flex-row justify-between items-center' key={playlist.id}>
                         <div className='flex flex-row items-center space-x-4'>
                             <img className='border border-white w-24 h-24' src='' alt='' />
@@ -39,7 +38,7 @@ const MainSection = ({allPlaylists}) => {
                 <p className='text-xl font-bold text-left'>Made For You</p>
                 <div className='grid grid-cols-7 gap-6'>
 
-                {allPlaylists.slice(1).map((playlist) => (
+                {allPlaylists.map((playlist) => (
                     <div className='w-44 h-60 border border-white flex flex-col p-2 text-left space-y-'>
                         <img className='w-full h-40 border border-white rounded mb-3' src=''></img>
                         <p className='font-bold'>{playlist.name}</p>
