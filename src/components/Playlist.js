@@ -38,6 +38,16 @@ const Playlist = () => {
             console.log('playlistTracks:', playlistTracks);
           }, [playlistTracks]);
 
+    const playTrack = async (trackUri) => {
+        try {
+            await axios.put(`http://127.0.0.1:8000/spotify/play-track/${trackUri}`);
+            console.log('Track playback started or resumed successfully.');
+        } catch (error) {
+            console.error('Song Uri', trackUri);
+            console.error('Error playing track:', error);
+        }
+    };
+
     const formatDuration = (duration) => {
     const minutes = Math.floor(duration / 60000);
     const seconds = Math.floor((duration % 60000) / 1000);
@@ -46,8 +56,8 @@ const Playlist = () => {
           
 
   return (
-    <section className='w-3/4 min-h-screen flex flex-col py-2 px-1 text-white '>
-        <div className='gray-color rounded-md border border-white flex-grow flex flex-col p-2'>
+    <section className='w-3/4 min-h-screen flex flex-col py-2 px-1 text-white'>
+        <div className='gray-color rounded-md border border-white flex-grow flex flex-col p-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 max-h-[100vh]'>
             <div className='w-full flex flex-row justify-between border border-white items-center p-4'>
                 <div className='flex flex-row space-x-2'>
                     <div className='bg-white rounded-full w-7 h-7'></div>
@@ -58,7 +68,7 @@ const Playlist = () => {
                 </div>
             </div>
 
-            <div className='w-full flex flex-col border border-white p-4 pt-28 justify-end h-1/3 items-start space-y-8'>
+            <div className='w-full flex flex-col border border-white p-4 pt-28 justify-end h-[30vh] items-start space-y-8'>
                 <div>
                     <p className='text-left'>Playlist</p>
                     <p className='text-7xl font-bold'>{playlist.name}</p>
@@ -84,7 +94,7 @@ const Playlist = () => {
             <div className='flex flex-col border border-gray-400 p-4 text-sm flex-grow'>
 
                 {playlistTracks.map((track) => (
-                <div className='w-full h-16 border border-white pl-3 flex flex-row items-center justify-evenly hover:bg-gray-800' key={track.name}>
+                <div className='w-full h-16 border border-white pl-3 p-2 flex flex-row items-center justify-evenly hover:bg-gray-800' onClick={() => playTrack(track.uri)} key={track.uri}>
                     <div className='flex flex-row items-center space-x-3 w-1/3'>
                     <div className='w-2 h-2 bg-white rounded-full'></div>
                     <img className='border border-gray-300 w-11 h-11' src={track.image_url} alt='Song Cover'></img>

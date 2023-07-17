@@ -9,8 +9,9 @@ function App() {
   const [allPlaylists, setAllPlaylists] = useState([]);
   const [likedSongs, setLikedSongs] = useState([]);
   const [savedPlaylists, setSavedPlaylists] = useState([]);
+  const [featuredPlaylists, setFeaturedPlaylists] = useState([]);
   const [spotifyAuthenticated, setSpotifyAuthenticated] = useState(false);
-  const [song, setSong] = useState({title: '', artist: '', album: '', albumImageUrl: '', duration: 0, isPlaying: false});
+  const [song, setSong] = useState({title: '', artists: '', duration: 0, image_url: ''});
 
   useEffect(() => {
     const authenticateSpotify = async () => {
@@ -48,6 +49,23 @@ function App() {
     getSavedPlaylists();
   }, []);
 
+
+  useEffect(() => {
+    const getFeaturedPlaylists = async () => {
+      try{
+        const response = await axios.get('http://127.0.0.1:8000/spotify/get-featured-playlists');
+        const featuredPlaylists = response.data;
+        setFeaturedPlaylists(featuredPlaylists);
+        console.log('featured Playlists:', featuredPlaylists);
+      }catch(error){
+        console.error('Error getting featured playlists:', error);
+      }
+    };
+
+    getFeaturedPlaylists();
+
+  }, []);
+
   useEffect(() => {
     const fetchCurrentSong = async () => {
       try {
@@ -69,7 +87,6 @@ function App() {
     };
   }, []);
 
-  console.log('song:', song)
   
   useEffect(() => {
     const fetchData = async () => {
@@ -94,7 +111,7 @@ function App() {
       <div className="App">
         <div className="App-body">
           <Routes>
-            <Route path="/" element={<Home allPlaylists={allPlaylists} song={song} savedPlaylists={savedPlaylists} renderPlaylist={false}/>} />
+            <Route path="/" element={<Home featuredPlaylists={featuredPlaylists} song={song} savedPlaylists={savedPlaylists} renderPlaylist={false}/>} />
             <Route path="/playlist/:playlistId" element={<Home savedPlaylists={savedPlaylists} song={song} renderPlaylist={true} />} />
           </Routes>
         </div>
