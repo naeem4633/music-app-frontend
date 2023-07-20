@@ -4,12 +4,14 @@ import axios from 'axios';
 import './App.css';
 import Home from './pages/Home.js';
 import Playlist from './components/Playlist.js';
+import Library from './components/Library.js';
 
 function App() {
   const [allPlaylists, setAllPlaylists] = useState([]);
   const [likedSongs, setLikedSongs] = useState([]);
   const [savedPlaylists, setSavedPlaylists] = useState([]);
   const [featuredPlaylists, setFeaturedPlaylists] = useState([]);
+  const [categorizedPlaylists, setCategorizedPlaylists] = useState([]);
   const [spotifyAuthenticated, setSpotifyAuthenticated] = useState(false);
   const [song, setSong] = useState({title: '', artists: '', duration: 0, image_url: ''});
 
@@ -19,7 +21,7 @@ function App() {
         const isAuthenticatedResponse = await axios.get('http://127.0.0.1:8000/spotify/is-authenticated');
         const isAuthenticated = isAuthenticatedResponse.data.status;
         setSpotifyAuthenticated(isAuthenticated);
-        console.log('isAuthenticated:', isAuthenticated);
+        // console.log('isAuthenticated:', isAuthenticated);
   
         if (!isAuthenticated) {
           const authUrlResponse = await axios.get('http://127.0.0.1:8000/spotify/get-auth-url');
@@ -40,7 +42,7 @@ function App() {
         const response = await axios.get('http://127.0.0.1:8000/spotify/get-saved-playlists');
         const savedPlaylists = response.data;
         setSavedPlaylists(savedPlaylists);
-        console.log('savedPlaylists:', savedPlaylists);
+        // console.log('savedPlaylists:', savedPlaylists);
       }catch(error){
         console.error('Error getting saved playlists:', error);
       }
@@ -49,6 +51,21 @@ function App() {
     getSavedPlaylists();
   }, []);
 
+  useEffect(() => {
+    const getCategorizedPlaylists = async () => {
+      try{
+        const response = await axios.get('http://127.0.0.1:8000/spotify/get-categorized-playlists');
+        const categorizedPlaylists = response.data;
+        // console.log('response data:',  response.data);
+        setCategorizedPlaylists(categorizedPlaylists);
+        // console.log('categorizedPlaylists:', categorizedPlaylists);
+      }catch(error){
+        console.error('Error getting categorized playlists:', error);
+      }
+    };
+
+    getCategorizedPlaylists();
+  }, []);
 
   useEffect(() => {
     const getFeaturedPlaylists = async () => {
@@ -56,7 +73,7 @@ function App() {
         const response = await axios.get('http://127.0.0.1:8000/spotify/get-featured-playlists');
         const featuredPlaylists = response.data;
         setFeaturedPlaylists(featuredPlaylists);
-        console.log('featured Playlists:', featuredPlaylists);
+        // console.log('featured Playlists:', featuredPlaylists);
       }catch(error){
         console.error('Error getting featured playlists:', error);
       }
@@ -66,26 +83,26 @@ function App() {
 
   }, []);
 
-  useEffect(() => {
-    const fetchCurrentSong = async () => {
-      try {
-        const response = await axios.get('http://127.0.0.1:8000/spotify/current-song');
-        const currentSong = response.data;
-        setSong(currentSong);
-        console.log('currentSong:', currentSong);
-      } catch (error) {
-        console.error('Error fetching current song:', error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchCurrentSong = async () => {
+  //     try {
+  //       const response = await axios.get('http://127.0.0.1:8000/spotify/current-song');
+  //       const currentSong = response.data;
+  //       setSong(currentSong);
+  //       console.log('currentSong:', currentSong);
+  //     } catch (error) {
+  //       console.error('Error fetching current song:', error);
+  //     }
+  //   };
 
-    const interval = setInterval(() => {
-      fetchCurrentSong();
-    }, 10000);
+  //   const interval = setInterval(() => {
+  //     fetchCurrentSong();
+  //   }, 10000);
 
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
+  //   return () => {
+  //     clearInterval(interval);
+  //   };
+  // }, []);
 
   
   useEffect(() => {
@@ -111,8 +128,9 @@ function App() {
       <div className="App">
         <div className="App-body">
           <Routes>
-            <Route path="/" element={<Home featuredPlaylists={featuredPlaylists} song={song} savedPlaylists={savedPlaylists} renderPlaylist={false}/>} />
+            <Route path="/" element={<Home featuredPlaylists={featuredPlaylists} song={song} savedPlaylists={savedPlaylists} renderPlaylist={false} categorizedPlaylists={categorizedPlaylists}/>} />
             <Route path="/playlist/:playlistId" element={<Home savedPlaylists={savedPlaylists} song={song} renderPlaylist={true} />} />
+            <Route path="/library" element={<Library savedPlaylists={savedPlaylists} />} />
           </Routes>
         </div>
       </div>
