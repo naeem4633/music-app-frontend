@@ -41,7 +41,7 @@ const MainSection = ( {featuredPlaylists, categorizedPlaylists} ) => {
                 </div>
                 <div className=''>
                     <div className='w-full p-4 space-y-4'>
-                        <p className='text-xl font-bold text-left'>Pop</p>
+                        <p className='text-xl font-bold text-left'>Rock</p>
                         <div className='grid lg:grid-cols-4 2xl:grid-cols-6 gap-12'>
                             {categorizedPlaylists.map((playlist) => (
                             <Link key={playlist.id} to={`/playlist/${playlist.id}`}>
